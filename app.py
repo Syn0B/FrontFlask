@@ -40,6 +40,7 @@ from routes.palabras_clave import bp as palabras_clave_bp
 from routes.aa_proyecto import bp as aa_proyecto_bp
 from routes.ods_proyecto import bp as ods_proyecto_bp
 from routes.proyecto_linea import bp as proyecto_linea_bp
+from routes.ac_proyecto import bp as ac_proyecto_bp
 
 
 # register_blueprint() conecta las rutas del Blueprint a la aplicacion Flask.
@@ -51,6 +52,7 @@ app.register_blueprint(palabras_clave_bp)
 app.register_blueprint(aa_proyecto_bp)
 app.register_blueprint(ods_proyecto_bp)
 app.register_blueprint(proyecto_linea_bp)
+app.register_blueprint(ac_proyecto_bp)
 
 
 # ══════════════════════════════════════════════

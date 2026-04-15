@@ -32,19 +32,21 @@ app.secret_key = SECRET_KEY
 # ══════════════════════════════════════════════
 
 # Importar el Blueprint de cada modulo de rutas.
-from routes.home import bp as home_bp        
-from routes.termino_clave import bp as termino_clave_bp    
-from routes.tipo_producto import bp as tipo_producto_bp    
+from routes.home import bp as home_bp
+from routes.termino_clave import bp as termino_clave_bp
+from routes.tipo_producto import bp as tipo_producto_bp
 from routes.proyecto import bp as proyecto_bp
 from routes.palabras_clave import bp as palabras_clave_bp
+from routes.aa_proyecto import bp as aa_proyecto_bp
 
 
 # register_blueprint() conecta las rutas del Blueprint a la aplicacion Flask.
-app.register_blueprint(home_bp)    
-app.register_blueprint(termino_clave_bp)   
-app.register_blueprint(tipo_producto_bp)   
-app.register_blueprint(proyecto_bp)   
-app.register_blueprint(palabras_clave_bp)  
+app.register_blueprint(home_bp)
+app.register_blueprint(termino_clave_bp)
+app.register_blueprint(tipo_producto_bp)
+app.register_blueprint(proyecto_bp)
+app.register_blueprint(palabras_clave_bp)
+app.register_blueprint(aa_proyecto_bp)
 
 
 # ══════════════════════════════════════════════

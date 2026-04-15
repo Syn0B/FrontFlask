@@ -1,24 +1,56 @@
 """
 app.py - Punto de entrada de la aplicacion Flask.
+
+Crea la aplicacion, registra los Blueprints (uno por tabla)
+e inicia el servidor de desarrollo en el puerto 5100.
 """
 
+# Flask: clase principal del framework web para crear la aplicacion
 from flask import Flask
+
+# SECRET_KEY: clave secreta definida en config.py, necesaria para mensajes flash
 from config import SECRET_KEY
 
-# Crear la aplicacion Flask
+
+# ══════════════════════════════════════════════
+# CREAR LA APLICACION FLASK
+# ══════════════════════════════════════════════
+
+# Flask(__name__) crea la instancia de la aplicacion.
+# __name__ le indica a Flask en que modulo esta corriendo (necesario para encontrar templates y static).
 app = Flask(__name__)
 
-# La clave secreta es necesaria para los mensajes flash (alertas)
+# La clave secreta es necesaria para los mensajes flash (alertas).
+# Flask la usa internamente para firmar las cookies de sesion.
 app.secret_key = SECRET_KEY
 
-# Los Blueprints se registran aqui
-from routes.home import bp as home_bp
+
+# ══════════════════════════════════════════════
+# REGISTRAR BLUEPRINTS
+# Cada Blueprint agrupa las rutas de una tabla.
+# Es el equivalente a tener una pagina separada por tabla.
+# ══════════════════════════════════════════════
+
+# Importar el Blueprint de cada modulo de rutas.
+from routes.home import bp as home_bp        
+from routes.termino_clave import bp as termino_clave_bp    
+from routes.tipo_producto import bp as tipo_producto_bp    
+from routes.proyecto import bp as proyecto_bp   
 
 
-app.register_blueprint(home_bp)
+# register_blueprint() conecta las rutas del Blueprint a la aplicacion Flask.
+app.register_blueprint(home_bp)    
+app.register_blueprint(termino_clave_bp)   
+app.register_blueprint(tipo_producto_bp)   
+app.register_blueprint(proyecto_bp)   
 
+
+# ══════════════════════════════════════════════
+# INICIAR EL SERVIDOR
+# ══════════════════════════════════════════════
 
 if __name__ == '__main__':
-    # Puerto 5100 para no chocar con la API (puerto 5034)
-    # debug=True recarga automaticamente al guardar cambios
+    # app.run() inicia el servidor de desarrollo de Flask.
+    # debug=True: recarga automaticamente al guardar cambios y muestra errores detallados.
+    # port=5100: puerto del frontend, diferente al de la API (5034) para evitar conflicto.
     app.run(debug=True, port=5100)

@@ -7,11 +7,11 @@ la URL de la API y la clave secreta para sesiones/flash.
 
 # ──────────────────────────────────────────────
 # URL base de la API REST que consume este frontend.
-# La API generica en C# corre en el puerto 5034.
+# La API generica en C# corre en el puerto 5035.
 # Se usa en ApiService para construir las URLs de cada peticion HTTP.
-# Ejemplo: f"{API_BASE_URL}/api/producto" genera "http://localhost:5034/api/producto"
+# Ejemplo: f"{API_BASE_URL}/api/producto" genera "http://localhost:5035/api/producto"
 # ──────────────────────────────────────────────
-API_BASE_URL = "http://localhost:5034"
+API_BASE_URL = "http://localhost:5035"
 
 # ──────────────────────────────────────────────
 # Clave secreta para el manejo de sesiones y mensajes flash.

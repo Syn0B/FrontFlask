@@ -9,7 +9,7 @@ Cada metodo retorna los datos o una tupla (exito, mensaje).
 # requests: libreria de Python para hacer peticiones HTTP (GET, POST, PUT, DELETE)
 import requests
 
-# API_BASE_URL: URL base de la API, importada desde config.py (ej: "http://localhost:5034")
+# API_BASE_URL: URL base de la API, importada desde config.py (ej: "http://localhost:5035")
 from config import API_BASE_URL
 
 
@@ -48,7 +48,7 @@ class ApiService:
             Lista de diccionarios con los datos, o lista vacia si hay error.
         """
         try:
-            # Construir la URL del endpoint: ej → "http://localhost:5034/api/empresa"
+            # Construir la URL del endpoint: ej → "http://localhost:5035/api/empresa"
             url = f"{self.base_url}/api/{tabla}"
 
             # Diccionario para los query params de la URL (ej: ?limite=5)
@@ -93,7 +93,7 @@ class ApiService:
             Tupla (exito: bool, mensaje: str)
         """
         try:
-            # Construir la URL del endpoint: ej → "http://localhost:5034/api/usuario"
+            # Construir la URL del endpoint: ej → "http://localhost:5035/api/usuario"
             url = f"{self.base_url}/api/{tabla}"
 
             # Diccionario para los query params opcionales
@@ -144,32 +144,22 @@ class ApiService:
             Tupla (exito: bool, mensaje: str)
         """
         try:
-            # Construir la URL con la clave primaria en la ruta
-            # Ejemplo: "http://localhost:5034/api/producto/codigo/PR001"
-            url = f"{self.base_url}/api/{tabla}/{nombre_clave}/{valor_clave}"
+            # Soporta PK simple ('codigo') y compuesta ('proyecto,termino_clave')
+            url = f"{self.base_url}/api/{tabla}/{self._ruta_clave(nombre_clave, valor_clave)}"
 
-            # Diccionario para query params opcionales (encriptacion)
             params = {}
-            # Agregar parametro de encriptacion si fue solicitado
             if campos_encriptar:
                 params['camposEncriptar'] = campos_encriptar
 
-            # requests.put() hace una peticion HTTP PUT para modificar un recurso existente.
-            # json=datos: envia solo los campos que cambiaron (sin la clave primaria).
             respuesta = requests.put(url, json=datos, params=params)
-
-            # Convertir la respuesta JSON a diccionario Python
             contenido = respuesta.json()
-
-            # Extraer el mensaje de la API (ej: "Registro actualizado exitosamente.")
             mensaje = contenido.get("mensaje", "Operacion completada.")
-
-            # Retornar tupla (exito, mensaje) para que el Blueprint muestre la alerta
             return (respuesta.ok, mensaje)
 
-        # Capturar errores de conexion
         except requests.RequestException as ex:
             return (False, f"Error de conexion: {ex}")
+        except ValueError as ex:
+            return (False, f"Error en la clave primaria: {ex}")
 
     # ──────────────────────────────────────────────
     # ELIMINAR: DELETE /api/{tabla}/{nombre_clave}/{valor_clave}
@@ -188,26 +178,19 @@ class ApiService:
             Tupla (exito: bool, mensaje: str)
         """
         try:
-            # Construir la URL con la clave primaria
-            # Ejemplo: "http://localhost:5034/api/empresa/codigo/E001"
-            url = f"{self.base_url}/api/{tabla}/{nombre_clave}/{valor_clave}"
+            # Soporta PK simple y compuesta
+            url = f"{self.base_url}/api/{tabla}/{self._ruta_clave(nombre_clave, valor_clave)}"
 
-            # requests.delete() hace una peticion HTTP DELETE para borrar el recurso.
-            # No necesita cuerpo JSON porque la clave ya va en la URL.
             respuesta = requests.delete(url)
-
-            # Convertir la respuesta JSON a diccionario Python
             contenido = respuesta.json()
-
-            # Extraer el mensaje de la API (ej: "Registro eliminado exitosamente.")
             mensaje = contenido.get("mensaje", "Operacion completada.")
-
-            # Retornar tupla (exito, mensaje)
             return (respuesta.ok, mensaje)
 
         # Capturar errores de conexion
         except requests.RequestException as ex:
             return (False, f"Error de conexion: {ex}")
+        except ValueError as ex:
+            return (False, f"Error en la clave primaria: {ex}")
 
     # ──────────────────────────────────────────────
     # EJECUTAR SP: POST /api/procedimientos/ejecutarsp
@@ -254,3 +237,32 @@ class ApiService:
             return (False, f"Error de conexion: {ex}")
         except Exception as ex:
             return (False, f"Error procesando respuesta: {ex}")
+
+
+    # ──────────────────────────────────────────────
+    # HELPER PRIVADO: construye el segmento de URL para la clave primaria.
+    # Soporta PK simple y PK compuesta (separadas por coma).
+    #
+    # Ejemplos:
+    #   _ruta_clave('codigo', 'E001')
+    #       → 'codigo/E001'
+    #   _ruta_clave('proyecto,termino_clave', '1,inteligencia')
+    #       → 'proyecto/1/termino_clave/inteligencia'
+    # ──────────────────────────────────────────────
+    def _ruta_clave(self, nombre_clave, valor_clave):
+        # Si no hay coma, es una PK simple: comportamiento original
+        if ',' not in nombre_clave:
+            return f"{nombre_clave}/{valor_clave}"
+
+        # PK compuesta: separar nombres y valores
+        nombres = [n.strip() for n in nombre_clave.split(',')]
+        valores = [v.strip() for v in str(valor_clave).split(',')]
+
+        # Validar que la cantidad de nombres y valores coincida
+        if len(nombres) != len(valores):
+            raise ValueError(
+                f"PK compuesta: {len(nombres)} nombres pero {len(valores)} valores"
+            )
+
+        # Intercalar: nombre1/valor1/nombre2/valor2/...
+        return '/'.join(f"{n}/{v}" for n, v in zip(nombres, valores))

@@ -66,14 +66,28 @@
         <div class="nav-item">
             <a class="nav-link {{ 'active' if request.path.startswith('/aa_proyecto') }}" href="/aa_proyecto">
                 <span class="nav-icon">🗺️</span>
-                <span class="nav-text">Area de Aplicacion</span>
+                <span class="nav-text">AA por Proyecto</span>
+            </a>
+        </div>
+      
+        <div class="nav-item">
+            <a class="nav-link {{ 'active' if request.path.startswith('/ods_proyecto') }}" href="/ods_proyecto">
+                <span class="nav-icon">🌱</span>
+                <span class="nav-text">ODS por Proyecto</span>
             </a>
         </div>
 
         <div class="nav-item">
+            <a class="nav-link {{ 'active' if request.path.startswith('/proyecto_linea') }}" href="/proyecto_linea">
+                <span class="nav-icon">🔬</span>
+                <span class="nav-text">Linea por Proyecto</span>
+            </a>
+        </div>
+      
+      <div class="nav-item">
             <a class="nav-link {{ 'active' if request.path.startswith('/ac_proyecto') }}" href="/ac_proyecto">
                 <span class="nav-icon">🧠</span>
-                <span class="nav-text">Area de Conocimiento</span>
+                <span class="nav-text">AC por Proyecto</span>
             </a>
         </div>
 
